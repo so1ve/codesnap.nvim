@@ -93,7 +93,7 @@
           }.${
             system
           };
-      in "${osArch}_generator.${libExt}";
+      in "${osArch}_generator.so";
 
       plugin = pkgs.vimUtils.buildVimPlugin {
         pname = "codesnap.nvim";

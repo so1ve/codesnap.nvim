@@ -32,10 +32,13 @@ This is an independently maintained fork of [mistricky/codesnap.nvim](https://gi
 paired with [so1ve/codesnap](https://github.com/so1ve/codesnap) for rendering improvements
 and asynchronous screenshot generation using Neovim's public `vim.async` API.
 Plugin updates and native binaries are released through `so1ve/codesnap.nvim`.
-The plugin's asynchronous changes and matching native binaries have not been
-released yet. Its generator builds against a pinned Git revision of the core fork.
-See [development and release notes](DEVELOPMENT.md) for building the generator and
-preparing a fork release.
+`v3.0.0-beta.1` is a prerelease and requires a recent Neovim nightly with
+`vim.async`. Its generator builds against a pinned Git revision of the core fork.
+See [development and release notes](DEVELOPMENT.md) for building the generator.
+
+> [!WARNING]
+>
+> This plugin is maintained using agents. No code quality guaranteed.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -113,30 +116,28 @@ We are excited to announce that CodeSnap.nvim now supports Windows! 🎉 It is l
 ## Installation
 We recommend using [Lazy.nvim](https://github.com/folke/lazy.nvim) to install CodeSnap.nvim, but you can still use another plugin manager you prefer.
 
-**Lazy.nvim, after a fork release is available**
+**Lazy.nvim**
 ```lua
-{ "so1ve/codesnap.nvim", branch = "main" }
+{ "so1ve/codesnap.nvim", tag = "v3.0.0-beta.1" }
 ```
 
 The plugin downloads its native generator from the matching version in this fork's
 [releases](https://github.com/so1ve/codesnap.nvim/releases); using these binaries does
-not require Cargo. A development checkout needs a locally built generator until
-those assets are published; see
-[DEVELOPMENT.md](DEVELOPMENT.md). Updating the Lua plugin alone does not install
-the rendering changes in the core fork.
+not require Cargo. To build a modified generator, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
 ### Nix (flake)
 
 The [nixpkgs package](https://search.nixos.org/packages?query=codesnap-nvim)
 `vimPlugins.codesnap-nvim` tracks upstream and does not include this fork's changes.
 
-This flake is intended for when you'd rather **build from source** (e.g. to track `main`, a fork, or a specific commit). It builds the plugin together with the `generator` library from source, so there's no runtime download and everything is reproducible. This is handy for Home Manager or any Nix-based Neovim setup.
+The flake builds the plugin and its pinned generator from source, with no runtime
+download. Use the prerelease tag for Home Manager or another Nix-based Neovim setup.
 
 Expose the plugin as a flake input:
 
 ```nix
 {
-  inputs.codesnap.url = "github:so1ve/codesnap.nvim";
+  inputs.codesnap.url = "github:so1ve/codesnap.nvim/v3.0.0-beta.1";
 }
 ```
 
