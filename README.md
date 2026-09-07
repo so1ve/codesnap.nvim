@@ -541,7 +541,7 @@ Refer to its documentation for the rendering configuration.
 ## Contribution
 CodeSnap.nvim is a project that will be maintained for the long term, and we always accepts new contributors, please feel free to submit PR & issues.
 
-The commit message convention of this project is following [commitlint-wizardoc](https://github.com/wizardoc/commitlint-wizardoc).
+Use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
 
 ### Contributors
 Thanks to all contributors for their contributions and works they have done.

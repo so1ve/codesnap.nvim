@@ -11,15 +11,6 @@ jobs:
         with:
           fetch-depth: 0
 
-
-      - name: Setup nodejs
-        uses: actions/setup-node@v4
-        with:
-          node-version: latest
-
-      - name: Install commit message convention lib
-        run: npm i commitlint-config-wizardoc -D
-
       - name: Check commit message
         uses: wagoid/commitlint-github-action@v4
 
