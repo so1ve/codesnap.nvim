@@ -3,34 +3,39 @@
 
 <p align="center">
 
-<img src="https://img.shields.io/badge/For Neovim 0.9+-57A143?logo=neovim&logoColor=fff&style=for-the-badge" alt="Neovim" />
+<img src="https://img.shields.io/badge/Neovim-nightly-57A143?logo=neovim&logoColor=fff&style=for-the-badge" alt="Neovim nightly" />
 
-<img src="https://img.shields.io/github/actions/workflow/status/mistricky/codesnap.nvim/release.yml?style=for-the-badge&label=release" alt="release action status" />
+<img src="https://img.shields.io/github/actions/workflow/status/so1ve/codesnap.nvim/release.yml?style=for-the-badge&label=release" alt="release action status" />
 
-<img src="https://img.shields.io/github/actions/workflow/status/mistricky/codesnap.nvim/lint.yml?style=for-the-badge&label=Lint" alt="release action status" />
+<img src="https://img.shields.io/github/actions/workflow/status/so1ve/codesnap.nvim/lint.yml?style=for-the-badge&label=Lint" alt="release action status" />
 
-<a href="https://github.com/mistricky/codesnap.nvim/issues">
-	<img alt="Issues" src="https://img.shields.io/github/issues/mistricky/codesnap.nvim?style=for-the-badge&logo=github&color=%23ffbd5e">
+<a href="https://github.com/so1ve/codesnap.nvim/issues">
+	<img alt="Issues" src="https://img.shields.io/github/issues/so1ve/codesnap.nvim?style=for-the-badge&logo=github&color=%23ffbd5e">
 </a>
-<a href="https://github.com/mistricky/codesnap.nvim/blob/main/LICENSE">
-	<img alt="License" src="https://img.shields.io/github/license/mistricky/codesnap.nvim?style=for-the-badge&logo=github&color=%235ef1ff">
+<a href="https://github.com/so1ve/codesnap.nvim/blob/main/LICENSE">
+	<img alt="License" src="https://img.shields.io/github/license/so1ve/codesnap.nvim?style=for-the-badge&logo=github&color=%235ef1ff">
 </a>
-<a href="https://github.com/mistricky/codesnap.nvim/stars">
-	<img alt="stars" src="https://img.shields.io/github/stars/mistricky/codesnap.nvim?style=for-the-badge&logo=github&color=%23bd5eff">
+<a href="https://github.com/so1ve/codesnap.nvim/stars">
+	<img alt="stars" src="https://img.shields.io/github/stars/so1ve/codesnap.nvim?style=for-the-badge&logo=github&color=%23bd5eff">
 </a>
 
 <img src="https://img.shields.io/badge/Made%20With%20Lua-2C2D72?logo=lua&logoColor=fff&style=for-the-badge" alt="made with lua" >
 
 <img src="https://img.shields.io/badge/Written%20in%20Rust-DEA584?logo=rust&logoColor=fff&style=for-the-badge" alt="written in rust" >
 
-<a href="https://dotfyle.com/plugins/mistricky/codesnap.nvim">
-	<img src="https://dotfyle.com/plugins/mistricky/codesnap.nvim/shield?style=for-the-badge" />
-</a>
-
 </p>
 
 <h1 align="center">CodeSnap.nvim</h1>
 <p align="center">📸 Snapshot plugin with rich features that can make pretty code snapshots for Neovim</p>
+
+This is an independently maintained fork of [mistricky/codesnap.nvim](https://github.com/mistricky/codesnap.nvim),
+paired with [so1ve/codesnap](https://github.com/so1ve/codesnap) for rendering improvements
+and asynchronous screenshot generation using Neovim's public `vim.async` API.
+Plugin updates and native binaries are released through `so1ve/codesnap.nvim`.
+The plugin's asynchronous changes and matching native binaries have not been
+released yet. Its generator builds against a pinned Git revision of the core fork.
+See [development and release notes](DEVELOPMENT.md) for building the generator and
+preparing a fork release.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -91,28 +96,39 @@ And there is no need to setup Rust environment to compile CodeSnap.nvim anymore,
 
 For most cases, you can use CodeSnap.nvim out-of-box without any additional setup. 🍵
 
-Configuration is **completely different** between v1 and v2, which is following [config.rs](https://github.com/codesnap-rs/codesnap/blob/main/core/src/config.rs) in CodeSnap. Which means you can use same configuration in both CodeSnap CLI and CodeSnap.nvim. Click [here]() see what 
-current config looks like.
+Configuration is **completely different** between v1 and v2. It follows
+[config.rs](https://github.com/so1ve/codesnap/blob/main/core/src/config.rs), so the
+same rendering settings can be used in CodeSnap CLI and CodeSnap.nvim.
 
 #### Windows Support
 We are excited to announce that CodeSnap.nvim now supports Windows! 🎉 It is less tested than it could be, so if you find any issues on Windows, please let us know by creating an issue.
 
 ## Prerequisites
-- Neovim 0.9.0+
+- A recent Neovim nightly with the public `vim.async` API. Update nightly if
+  `:lua print(vim.async)` prints `nil`; older nightlies and Neovim 0.9 do not provide it.
+- Linux clipboard copying needs `wl-copy` from [wl-clipboard](https://github.com/bugaevc/wl-clipboard)
+  on Wayland, or [xclip](https://github.com/astrand/xclip) on X11, available on `PATH`.
+  Saving PNG files does not require either clipboard tool.
 
 ## Installation
 We recommend using [Lazy.nvim](https://github.com/folke/lazy.nvim) to install CodeSnap.nvim, but you can still use another plugin manager you prefer.
 
-**Lazy.nvim**
+**Lazy.nvim, after a fork release is available**
 ```lua
-{ "mistricky/codesnap.nvim", tag = "v2.0.5" }
+{ "so1ve/codesnap.nvim", branch = "main" }
 ```
 
-> Maybe you are CodeSnap.nvim v1 user, you may notice that we remove the `build` option in v2, because we don't need to compile the Rust code anymore, we precompiled the `generator` shared file for common platforms, you can find the precompiled files in [releases](https://github.com/mistricky/codesnap.nvim/releases) page. So when you first install v2, CodeSnap.nvim will download the precompiled file automatically, it may take a few seconds to download the file, please be patient.
+The plugin downloads its native generator from the matching version in this fork's
+[releases](https://github.com/so1ve/codesnap.nvim/releases); using these binaries does
+not require Cargo. A development checkout needs a locally built generator until
+those assets are published; see
+[DEVELOPMENT.md](DEVELOPMENT.md). Updating the Lua plugin alone does not install
+the rendering changes in the core fork.
 
 ### Nix (flake)
 
-CodeSnap.nvim is already packaged in [nixpkgs](https://search.nixos.org/packages?query=codesnap-nvim) as `vimPlugins.codesnap-nvim` — for most Nix users that's the easiest way to install it.
+The [nixpkgs package](https://search.nixos.org/packages?query=codesnap-nvim)
+`vimPlugins.codesnap-nvim` tracks upstream and does not include this fork's changes.
 
 This flake is intended for when you'd rather **build from source** (e.g. to track `main`, a fork, or a specific commit). It builds the plugin together with the `generator` library from source, so there's no runtime download and everything is reproducible. This is handy for Home Manager or any Nix-based Neovim setup.
 
@@ -120,7 +136,7 @@ Expose the plugin as a flake input:
 
 ```nix
 {
-  inputs.codesnap.url = "github:mistricky/codesnap.nvim";
+  inputs.codesnap.url = "github:so1ve/codesnap.nvim";
 }
 ```
 
@@ -138,6 +154,13 @@ The flake also exposes:
 - `packages.${system}.generator` — just the Rust `generator` cdylib.
 - `checks.${system}.plugin-loads` — a headless-Neovim smoke test that loads the plugin and native library (`nix flake check`).
 - `devShells.${system}.default` — a Rust + stylua dev shell for hacking on the generator.
+
+Use a Neovim nightly that provides `vim.async` alongside this package. The flake's
+`plugin-loads` check uses the pinned package from `neovim-nightly-overlay` and
+checks that the API is available. Update that input with
+`nix flake update neovim-nightly-overlay` when a newer nightly is needed.
+The nightly overlay provides Linux x86_64, Linux aarch64, and macOS aarch64
+packages; the flake therefore has no `plugin-loads` check for macOS x86_64.
 
 
 ## Keymappings
@@ -158,25 +181,21 @@ CodeSnap
 ```
 
 #### Copy into clipboard on Linux Wayland
-Copy screenshots directly into the clipboard is cool, however, it doesn't work well on wl-clipboard, because the wl-clipboard can't paste the content which come from exited processes. As Hyprland document say:
-
-
-> When we copy something on Wayland (using wl-clipboard) and close the application we copied from, the copied data disappears from the clipboard and we cannot paste it anymore. So to fix this problem we can use a program called as wl-clip-persist which will preserve the data in the clipboard after the application is closed. 
-
-
-If you using CodeSnap.nvim on wl-clipboard, you can refer [wl-clip-persist](https://github.com/Linus789/wl-clip-persist), it reads all the clipboard data into memory and then overwrites the clipboard with the data from our memory to persist copied data.
+On Linux, the rendering worker hands its PNG or ASCII output to `wl-copy` on
+Wayland, or `xclip` on X11. The clipboard tool continues serving the selection
+after the worker exits, so copying does not depend on a clipboard manager keeping
+the worker's data alive. If the required tool is missing, CodeSnap reports an
+error. macOS and Windows use the native clipboard implementation.
 
 #### Save the snapshot
 Save the snapshot into a file, you can specify the path where you want to save it
 
 Run `CodeSnapSave` command, CodeSnap.nvim will generate a snapshot of the currently selected code and save it in the path you specified in config.
 
-CodeSnap.nvim supports saving snapshot in `PNG`, `SVG` and `HTML` format, you can specify the file extension in the path you provided, for example:
+`CodeSnapSave` saves PNG snapshots. Provide a destination path with a `.png` extension:
 
 ```shell
 CodeSnapSave /path/to/your/snapshot.png
-CodeSnapSave /path/to/your/snapshot.svg
-CodeSnapSave /path/to/your/snapshot.html
 ```
 
 ### ASCII snapshot
@@ -411,17 +430,27 @@ CodeSnapSave <path> # Save the snapshot of the currently selected code and save 
 CodeSnapASCII # Take a code snapshot in ASCII format
 
 CodeSnapHighlight # Take code snapshot with highlights code blocks and copy it into the clipboard
+
+CodeSnapCancel # Cancel the current screenshot task
 ```
+
+Screenshot generation runs in a background Neovim process. You can keep editing
+while it runs. Only one screenshot task runs at a time; use `:CodeSnapCancel`
+before starting another. Saving writes a temporary image beside the destination
+and replaces the destination only after the image is complete.
+
 **Lua**
 ```lua
-local codesnap <const> = require("codesnap")
+local codesnap = require("codesnap")
 
 -- Take a snapshot of the currently selected code and copy the snapshot into the clipboard
-codesnap.copy()
-
--- Save the snapshot of the currently selected code and save it on the disk
-codesnap.save(path)
+local task = codesnap.copy()
 ```
+
+`copy()`, `save(path)`, `copy_ascii()`, and `copy_highlight()` return a
+`vim.async.Task`. They return before rendering finishes; completion or failure is
+reported through a notification. Use the task's `on_complete()` method when Lua
+code needs to react to completion, or `codesnap.cancel()` to cancel the current task.
 
 ## Configuration
 Define your custom config using `setup` function
@@ -504,7 +533,8 @@ There is a default config:
 }
 ```
 
-Actually, these config are come from the [CodeSnap](https://github.com/codesnap-rs/codesnap) library, you can refer to the [CodeSnap](https://github.com/codesnap-rs/codesnap) documentation to learn more about the configuration.
+These settings come from the [CodeSnap core fork](https://github.com/so1ve/codesnap).
+Refer to its documentation for the rendering configuration.
 
 
 ## Contribution

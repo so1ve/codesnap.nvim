@@ -28,6 +28,12 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: Release ${{ github.ref_name }}
-          token: ${{ secrets.PAT }}
+          token: ${{ github.token }}
           generateReleaseNotes: true
           prerelease: ${{ env.is_prerelease }}
+
+  build:
+    needs: release
+    uses: ./.github/workflows/build.yaml
+    with:
+      tag: ${{ github.ref_name }}

@@ -2,11 +2,13 @@
   description = "CodeSnap.nvim - pretty code snapshots for Neovim";
 
   inputs = {
+    neovim-nightly-overlay.url = "github:nix-community/neovim-nightly-overlay";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs = {
     self,
+    neovim-nightly-overlay,
     nixpkgs,
   }: let
     # Systems for which the generator is compiled and the plugin is provided.
@@ -45,7 +47,10 @@
         inherit version;
         src = self;
         sourceRoot = "${self.sourceInfo.name or "source"}/generator";
-        cargoLock.lockFile = ./generator/Cargo.lock;
+        cargoLock = {
+          lockFile = ./generator/Cargo.lock;
+          outputHashes."codesnap-0.13.4" = "sha256-kJUZkh+RtzPuPlgHeMPIUuQQtjXvxxSmISzmq7I5Dd4=";
+        };
 
         nativeBuildInputs = [
           pkgs.pkg-config
@@ -117,23 +122,26 @@
     checks = forAllSystems ({
       pkgs,
       system,
-    }: {
-      plugin-loads = let
-        plugin = self.packages.${system}.default;
-        nvim = pkgs.neovim;
-      in
-        pkgs.runCommand "codesnap-plugin-loads" {
-          nativeBuildInputs = [nvim];
-        } ''
-          export HOME=$TMPDIR
-          nvim --headless --clean \
-            --cmd "set runtimepath^=${plugin}" \
-            -c "lua require('codesnap').setup({})" \
-            -c "lua assert(require('codesnap.module').load_generator() ~= nil, 'generator failed to load')" \
-            -c "qa!" 2> $TMPDIR/err || (cat $TMPDIR/err; exit 1)
-          echo "codesnap.nvim loaded and generator module resolved" > $out
-        '';
-    });
+    }:
+      # The nightly overlay no longer provides an x86_64-darwin package
+      nixpkgs.lib.optionalAttrs (builtins.hasAttr system neovim-nightly-overlay.packages) {
+        plugin-loads = let
+          plugin = self.packages.${system}.default;
+          nvim = neovim-nightly-overlay.packages.${system}.default;
+        in
+          pkgs.runCommand "codesnap-plugin-loads" {
+            nativeBuildInputs = [nvim];
+          } ''
+            export HOME=$TMPDIR
+            nvim --headless --clean \
+              --cmd "set runtimepath^=${plugin}" \
+              -c "lua assert(vim.async ~= nil, 'Neovim nightly with vim.async is required')" \
+              -c "lua require('codesnap').setup({})" \
+              -c "lua assert(require('codesnap.module').load_generator() ~= nil, 'generator failed to load')" \
+              -c "qa!" 2> $TMPDIR/err || (cat $TMPDIR/err; exit 1)
+            echo "codesnap.nvim loaded and generator module resolved" > $out
+          '';
+      });
 
     devShells = forAllSystems ({
       pkgs,

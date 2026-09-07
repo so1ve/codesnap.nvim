@@ -332,8 +332,7 @@ dependencies = [
 [[package]]
 name = "codesnap"
 version = "0.13.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a17a179002aef15f7f5d006c482402a8313fb033f30c837f47b03c6103a2760"
+source = "git+https://github.com/so1ve/codesnap?rev=f026d03294d74004de02b442eea7cf28c5bca24d#f026d03294d74004de02b442eea7cf28c5bca24d"
 dependencies = [
  "ansi_term",
  "anyhow",
@@ -349,6 +348,7 @@ dependencies = [
  "include_dir",
  "mime_guess",
  "plist",
+ "png",
  "regex",
  "reqwest",
  "rgb",

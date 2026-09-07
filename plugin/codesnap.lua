@@ -31,11 +31,7 @@ vim.api.nvim_create_user_command(
   { nargs = "*", range = "%" }
 )
 
-vim.api.nvim_create_user_command(
-  "CodeSnapHighlightSave",
-  take_snapshot(codesnap.save_highlight),
-  { nargs = "*", range = "%" }
-)
+vim.api.nvim_create_user_command("CodeSnapCancel", codesnap.cancel, {})
 
 -- vim.api.nvim_create_user_command("CodeSnap", take_snapshot(codesnap.copy_into_clipboard), { nargs = "*", range = "%" })
 --

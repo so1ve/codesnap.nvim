@@ -2,32 +2,22 @@ local M = {}
 
 -- Pop up a modal dialog with the selected text
 -- @param selected_text string The text to display in the modal
--- @param filetype string|nil The filetype for syntax highlighting (optional)
+-- @param filetype string The filetype for syntax highlighting
 -- @param callback function Callback function that receives {start_line, end_line} or nil
 function M.pop_modal(selected_text, filetype, callback)
-  if not selected_text or selected_text == "" then
-    vim.notify("No text provided to modal", vim.log.levels.ERROR)
-    if callback then
-      callback(nil)
-    end
-    return
-  end
-
   local selected_lines = vim.split(selected_text, "\n", { plain = true })
 
   -- Create a new buffer for the floating window
   local buf = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, selected_lines)
 
-  -- Set filetype for syntax highlighting if provided
-  if filetype and filetype ~= "" then
-    vim.api.nvim_buf_set_option(buf, "filetype", filetype)
-  end
+  vim.bo[buf].filetype = filetype
 
   -- Make the buffer read-only
   vim.api.nvim_buf_set_option(buf, "modifiable", false)
   vim.api.nvim_buf_set_option(buf, "buftype", "nofile")
   vim.api.nvim_buf_set_option(buf, "readonly", true)
+  vim.bo[buf].bufhidden = "wipe"
 
   -- Calculate window size and position
   local width = 0
@@ -61,20 +51,30 @@ function M.pop_modal(selected_text, filetype, callback)
   vim.api.nvim_win_set_option(win, "number", true)
   vim.api.nvim_win_set_option(win, "relativenumber", false)
 
-  -- Ensure the window has focus
-  vim.api.nvim_set_current_win(win)
-
   -- Function to clean up and call callback
+  local closed = false
   local function close_and_callback(result)
+    if closed then
+      return
+    end
+    closed = true
     -- Close the floating window if it's still valid
     if vim.api.nvim_win_is_valid(win) then
       vim.api.nvim_win_close(win, true)
     end
-    -- Call the callback with the result
-    if callback then
-      callback(result)
-    end
+    callback(result)
   end
+
+  vim.api.nvim_create_autocmd("WinClosed", {
+    pattern = tostring(win),
+    once = true,
+    callback = function()
+      if not closed then
+        closed = true
+        callback(nil)
+      end
+    end,
+  })
 
   -- Set up keymaps for the floating window
   vim.keymap.set({ "n", "v" }, "<CR>", function()
@@ -111,6 +111,13 @@ function M.pop_modal(selected_text, filetype, callback)
   vim.keymap.set("n", "q", function()
     close_and_callback(nil) -- User cancelled
   end, { buffer = buf })
+
+  return {
+    close = function(_, callback)
+      close_and_callback(nil)
+      callback()
+    end,
+  }
 end
 
 return M
